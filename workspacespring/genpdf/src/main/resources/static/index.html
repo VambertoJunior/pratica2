@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerar PDF</title>
+</head>
+<body>
+    <h1>Gerar PDF</h1>
+    <form id="pdfForm">
+        <label for="title">Título:</label>
+        <input type="text" id="title" name="title" required><br><br>
+        <label for="text">Texto:</label><br>
+        <textarea id="text" name="text" rows="10" cols="30" required></textarea><br><br>
+        <button type="button" onclick="generatePdf()">Gerar PDF</button>
+    </form>
+
+    <script>
+        function generatePdf() {
+            const title = document.getElementById('title').value;
+            const text = document.getElementById('text').value;
+            fetch('/home/genpdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title, text }),
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'meupdf.pdf';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            })
+            .catch(error => console.error('Erro ao gerar PDF:', error));
+        }
+    </script>
+</body>
+</html>
